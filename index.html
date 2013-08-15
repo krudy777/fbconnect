@@ -88,7 +88,7 @@
     var friendIDs = [];
     var fdata;
     function me() {
-        FB.api('/me', function (response) {
+        FB.api('/me/permissions', function (response) {
             alert(JSON.stringify(response));
         });
 
