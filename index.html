@@ -10,7 +10,7 @@
     <button onclick="logout()">Logout</button>
     <button onclick="facebookWallPost()">facebookWallPost</button>
     <button onclick="publishStoryFriend()">friendstory</button>
-    <button onclick="share()">share!</button>
+    <button onclick="start()">share!</button>
     <button onclick="whereIam()">where I am ?</button>
 
     <div id="data">loading ...</div>
@@ -55,8 +55,18 @@
         alert(document.URL);
     }
 
-    function share() {
-
+    function start() {
+        FB.getLoginStatus(function (response) {
+            if (response.status == 'connected') {
+                me();
+            } else {
+                FB.login( function (response) {
+                     me();
+                 },
+                 { scope: "email" }
+                 );
+            }
+        });
     }
 
     function getLoginStatus() {
@@ -106,10 +116,10 @@
     function login() {
         FB.login(
                  function (response) {
-                     if (response.session) {
-                         alert('login.logged in');
+                     if (response.authResponse) {
+                         alert('login.logged in' + JSON.stringify(response));
                      } else {
-                         alert('login.not logged in');
+                         alert('login.not logged in' + JSON.stringify(response));
                      }
                  },
                  { scope: "email" }
