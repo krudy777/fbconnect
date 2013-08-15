@@ -25,17 +25,19 @@
     <script src="facebook-js-sdk.js"></script>
 
     <script>
-             <!-- These are the notifications that are displayed to the user through pop-ups if the above JS files does not exist in the same directory-->
+             
+    loggedIn = false;
+
     if ((typeof cordova == 'undefined') && (typeof Cordova == 'undefined')) alert('Cordova variable does not exist. Check that you have included cordova.js correctly');
     if (typeof CDV == 'undefined') alert('CDV variable does not exist. Check that you have included cdv-plugin-fb-connect.js correctly');
     if (typeof FB == 'undefined') alert('FB variable does not exist. Check that you have included the Facebook JS SDK file.');
 
     FB.Event.subscribe('auth.login', function (response) {
-        alert('auth.login event');
+        loggedIn = true;
     });
 
     FB.Event.subscribe('auth.logout', function (response) {
-        alert('auth.logout event');
+        loggedIn = false;
     });
 
     FB.Event.subscribe('auth.sessionChange', function (response) {
@@ -60,11 +62,16 @@
             if (response.status == 'connected') {
                 me();
             } else {
-                FB.login( function (response) {
-                     me();
-                 },
-                 { scope: "email" }
-                 );
+                FB.login(
+                function (response) {
+                    if (response.authResponse) {
+                        me();
+                    } else {
+                        alert('Please login to FaceBook to share');
+                    }
+                },
+                { scope: 'email,publish_stream,user_birthday' }
+                );
             }
         });
     }
@@ -81,29 +88,17 @@
     var friendIDs = [];
     var fdata;
     function me() {
-        FB.api('/me/friends', { fields: 'id, name, picture' }, function (response) {
-            if (response.error) {
-                alert(JSON.stringify(response.error));
-            } else {
-                var data = document.getElementById('data');
-                fdata = response.data;
-                console.log("fdata: " + fdata);
-                response.data.forEach(function (item) {
-                    var d = document.createElement('div');
-                    d.innerHTML = "<img src=" + item.picture + "/>" + item.name;
-                    data.appendChild(d);
-                });
-            }
-            var friends = response.data;
-            console.log(friends.length);
-            for (var k = 0; k < friends.length && k < 200; k++) {
-                var friend = friends[k];
-                var index = 1;
+        FB.api('/me', function (response) {
+            alert(JSON.stringify(response));
+        });
 
-                friendIDs[k] = friend.id;
-                //friendsInfo[k] = friend;
+        var body = 'http://neoltsal.blog.hu/2013/08/07/foodnotbombs';
+        FB.api('/me/feed', 'post', { link: body }, function (response) {
+            if (!response || response.error) {
+                alert('Error occured');
+            } else {
+                alert('Post ID: ' + response.id);
             }
-            console.log("friendId's: " + friendIDs);
         });
     }
 
