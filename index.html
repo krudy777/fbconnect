@@ -131,7 +131,10 @@
             else {
 
                 if (confirm('Get publish_stream permission?')) {
-                    start();
+                    FB.logout(function (response) {
+                        alert('getpublishstream logged out');
+                        start();
+                    });                    
                 } else {
                     // Do nothing!
                 }
