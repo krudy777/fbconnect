@@ -41,6 +41,7 @@
             } else {
                 FB.login(
                 function (response) {
+                    alert('FB login in start(): ' + JSON.stringify(response));
                     if (response.authResponse) {
                         me();
                     } else {
