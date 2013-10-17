@@ -25,34 +25,11 @@
     <script src="facebook-js-sdk.js"></script>
 
     <script>
-             
-    loggedIn = false;
-
+                 
     if ((typeof cordova == 'undefined') && (typeof Cordova == 'undefined')) alert('Cordova variable does not exist. Check that you have included cordova.js correctly');
     if (typeof CDV == 'undefined') alert('CDV variable does not exist. Check that you have included cdv-plugin-fb-connect.js correctly');
     if (typeof FB == 'undefined') alert('FB variable does not exist. Check that you have included the Facebook JS SDK file.');
-
-    FB.Event.subscribe('auth.login', function (response) {
-        loggedIn = true;
-    });
-
-    FB.Event.subscribe('auth.logout', function (response) {
-        loggedIn = false;
-    });
-
-    FB.Event.subscribe('auth.sessionChange', function (response) {
-        alert('auth.sessionChange event');
-    });
-
-    FB.Event.subscribe('auth.statusChange', function (response) {
-        alert('auth.statusChange event');
-    });
-
-    /*function getSession() {
-        alert("session: " + JSON.stringify(FB.getSession()));
-    }
-    */
-
+   
     function whereIam() {
         alert(document.URL);
     }
@@ -116,29 +93,38 @@
 
 
         FB.api('/me/permissions', function (response) {
-            if (response.data[0].publish_stream) {
 
-                var body = 'http://neoltsal.blog.hu/2013/08/07/foodnotbombs';
-                FB.api('/me/feed', 'post', { link: body }, function (response) {
-                    if (!response || response.error) {
-                        alert('Error occured');
-                    } else {
-                        alert('Post ID: ' + response.id);
-                    }
-                });
-
+            //alkalmazást a bejelentkezés óta eltávolították, invalid access token
+            if (!response || response.error) {
+                alert('Error occured during /me/permissions');
+                alert(JSON.stringify(response));
             }
             else {
+                //publish_stream engedély meglétének ellenõrzése
+                if (response.data[0].publish_stream) {
 
-                if (confirm('Get publish_stream permission?')) {
-                    FB.logout(function (response) {
-                        alert('getpublishstream logged out');
-                        start();
-                    });                    
-                } else {
-                    // Do nothing!
+                    //postolás
+                    var body = 'http://neoltsal.blog.hu/2013/08/07/foodnotbombs';
+                    FB.api('/me/feed', 'post', { link: body }, function (response) {
+                        if (!response || response.error) {
+                            alert('Error occured');
+                        } else {
+                            alert('Post ID: ' + response.id);
+                        }
+                    });
+
                 }
+                else {
 
+                    //nincs publish_stream engedély (idõközben eltávolították)
+                    if (confirm('Get publish_stream permission?')) {
+                        //kijelentkezés és authentikációs hurok újraindítása
+                        FB.logout(function (response) {
+                            alert('getpublishstream logged out');
+                            start();
+                        });                    
+                    }
+                }
             }
         });
                
