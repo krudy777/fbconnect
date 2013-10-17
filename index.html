@@ -87,19 +87,58 @@
     }
     var friendIDs = [];
     var fdata;
-    function me() {
-        FB.api('/me/permissions', function (response) {
-            alert(JSON.stringify(response));
-        });
 
-        var body = 'http://neoltsal.blog.hu/2013/08/07/foodnotbombs';
-        FB.api('/me/feed', 'post', { link: body }, function (response) {
-            if (!response || response.error) {
-                alert('Error occured');
-            } else {
-                alert('Post ID: ' + response.id);
+    function me() {
+
+
+        // /me/permissions sample response
+        var r = {
+            "data": [
+              {
+                  "installed": 1,
+                  "basic_info": 1,
+                  "status_update": 1,
+                  "photo_upload": 1,
+                  "video_upload": 1,
+                  "email": 1,
+                  "create_note": 1,
+                  "share_item": 1,
+                  "publish_stream": 1,
+                  "publish_actions": 1,
+                  "user_birthday": 1,
+                  "user_friends": 1
+              }
+            ],
+            "paging": {
+                "next": "https://graph.facebook.com/100004957860745/permissions?limit=5000&offset=5000"
+            }
+        };
+
+
+        FB.api('/me/permissions', function (response) {
+            if (response.data[0].publish_stream) {
+
+                var body = 'http://neoltsal.blog.hu/2013/08/07/foodnotbombs';
+                FB.api('/me/feed', 'post', { link: body }, function (response) {
+                    if (!response || response.error) {
+                        alert('Error occured');
+                    } else {
+                        alert('Post ID: ' + response.id);
+                    }
+                });
+
+            }
+            else {
+
+                if (confirm('Get publish_stream permission?')) {
+                    start();
+                } else {
+                    // Do nothing!
+                }
+
             }
         });
+               
     }
 
     function logout() {
