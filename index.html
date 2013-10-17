@@ -97,7 +97,12 @@
             //alkalmazást a bejelentkezés óta eltávolították, invalid access token
             if (!response || response.error) {
                 alert('Error occured during /me/permissions');
-                alert(JSON.stringify(response));
+                //alert(JSON.stringify(response));
+                //kijelentkezés majd indulás elölrõl (alkalmazás authorizálása)
+                FB.logout(function (response) {
+                    alert('/me/permissions logged out');
+                    start();
+                });
             }
             else {
                 //publish_stream engedély meglétének ellenõrzése
